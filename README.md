@@ -184,3 +184,109 @@ T = 8 threads, M = 200.000 incrementos por thread, esperado = 1.600.000. Ambas a
 ---
 
 ## Parte 3 - Deadlock
+
+O que e o problema
+
+Deadlock acontece quando duas ou mais threads ficam bloqueadas para sempre porque cada uma esta esperando por um recurso que esta sendo segurado por outra thread.
+
+No nosso exemplo, usamos 2 threads (T1 e T2) e 2 locks (LOCK_A e LOCK_B).
+
+Na versao que trava:
+
+A Thread 1 pega o LOCK_A e depois tenta pegar o LOCK_B.
+A Thread 2 pega o LOCK_B e depois tenta pegar o LOCK_A.
+
+Depois que cada thread pega o primeiro lock, ambas ficam esperando pelo lock que a outra esta segurando. Como nenhuma consegue continuar para liberar o recurso que possui, o programa fica travado indefinidamente.
+
+As 4 condicoes do Coffman que acontecem aqui
+
+Exclusao mutua - cada lock so pode ser utilizado por uma thread por vez.
+Manter e esperar - cada thread continua segurando um lock enquanto espera pelo outro.
+Sem preempcao - um lock nao pode ser retirado a forca da thread que o possui.
+Espera circular - T1 espera um recurso que esta com T2, enquanto T2 espera um recurso que esta com T1.
+
+Como resolvemos
+
+A solucao adotada foi fazer as duas threads adquirirem os locks na mesma ordem.
+
+Antes:
+
+T1 -> LOCK_A -> LOCK_B
+
+T2 -> LOCK_B -> LOCK_A
+
+Depois:
+
+T1 -> LOCK_A -> LOCK_B
+
+T2 -> LOCK_A -> LOCK_B
+
+Com essa regra, uma thread pode precisar esperar pela outra, mas nao existe mais a possibilidade de formar um ciclo de espera. Assim, eliminamos a condicao de espera circular e impedimos a ocorrencia do deadlock.
+
+Pseudocodigo (versao que trava)
+
+Thread 1:
+pegar LOCK_A
+pegar LOCK_B
+
+Thread 2:
+pegar LOCK_B
+pegar LOCK_A
+
+Resultado:
+T1 espera T2
+T2 espera T1
+DEADLOCK
+
+Pseudocodigo (versao corrigida)
+
+Thread 1:
+pegar LOCK_A
+pegar LOCK_B
+
+Thread 2:
+pegar LOCK_A
+pegar LOCK_B
+
+Resultado:
+uma thread espera a outra terminar
+nao existe espera circular
+sem deadlock
+
+Print da execucao (versao travada)
+
+=== Deadlock - versao que trava ===
+
+T1: pegando LOCK_A
+T2: pegando LOCK_B
+T1: tentando pegar LOCK_B
+T2: tentando pegar LOCK_A
+
+!!! DEADLOCK !!!
+As threads ainda estao vivas e travadas.
+
+T1 tem o LOCK_A e quer o LOCK_B.
+T2 tem o LOCK_B e quer o LOCK_A.
+
+Ninguem larga o recurso que possui, formando uma espera circular.
+
+Print da execucao (versao corrigida)
+
+=== Deadlock - versao corrigida (mesma ordem pras duas) ===
+
+T1: pegando LOCK_A
+T1: peguei LOCK_A
+
+T2: pegando LOCK_A
+
+T1: pegando LOCK_B
+T1: peguei LOCK_B
+T1: terminei!
+
+T2: peguei LOCK_A
+T2: pegando LOCK_B
+T2: peguei LOCK_B
+T2: terminei!
+
+As duas terminaram corretamente.
+Sem deadlock.
