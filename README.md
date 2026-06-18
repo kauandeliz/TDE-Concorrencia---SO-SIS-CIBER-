@@ -1,6 +1,6 @@
 # TDE - Concorrencia: Filosofos, Semaforos e Deadlock
 
-**Link do video no YouTube:** 
+VIDEO NO YOUTUBE: https://youtu.be/8kKp3YjBw4g
 
 ## Integrantes do grupo
 
